@@ -1,3 +1,13 @@
 import { Routes } from '@angular/router';
+import { LoginComponent } from './login/login.component';
+import { LibraryComponent } from './library/library.component';
+import { authGuard } from './guards/auth.guard';
+import { libraryGuard } from './guards/library.guard';
 
-export const routes: Routes = [];
+
+export const routes: Routes = [
+    { path: '',   redirectTo: '/login', pathMatch: 'full' },
+    { path: 'login', component: LoginComponent,  canActivate:[authGuard] },
+    { path: 'library', component: LibraryComponent, canActivate:[authGuard] },
+    { path: '**', redirectTo: 'library' },
+  ];

@@ -1,0 +1,9 @@
+{
+  "projects": {
+    "default": "cockteleo-8724a",
+    "cockteleo": "cockteleo-8724a"
+  },
+  "targets": {},
+  "etags": {},
+  "dataconnectEmulatorConfig": {}
+}

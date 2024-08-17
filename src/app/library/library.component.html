@@ -1,0 +1,80 @@
+<!-- Navbar -->
+<nav
+  class="navbar navbar-expand-lg navbar-dark"
+  style="margin: 0; border-radius: 0"
+>
+  <div class="container-fluid">
+    <a class="navbar-brand" href="#">Cockteleo</a>
+    <div class="ml-auto">
+      <button
+        (click)="logOut()"
+        mat-fab
+        aria-label="Log Out"
+        class="btn-logout"
+      >
+        <mat-icon>logout</mat-icon>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<div class="container">
+  <!-- 
+  ---------------------------
+  TODO BUSCADOR Y FILTROS
+  --------------------------
+    -->
+
+
+  <!-- Buscador
+  <div class="row mb-3 mt-3">
+    <div class="col">
+      <input class="form-control" type="text" placeholder="Buscar..." />
+    </div>
+  </div>
+
+  
+  <div class="row mb-3">
+    <div class="col">
+      <mat-expansion-panel class="filtros">
+        <mat-expansion-panel-header>
+          <mat-panel-title>Filtros</mat-panel-title>
+        </mat-expansion-panel-header>
+        
+      </mat-expansion-panel>
+    </div>
+  </div> -->
+
+  <!-- Pestañas -->
+  <mat-tab-group class="mb-3">
+    <mat-tab label="Todas las recetas">
+      <!-- Contenido de la primera pestaña -->
+      <div class="recetas position-relative">
+        <!-- Botón nueva receta -->
+        <div class="d-flex justify-content-end mb-3">
+          <button class="btn btn-primary nueva-receta" (click)="openNewRecipeDialog()">Nueva receta</button>
+        </div>
+
+        <!-- Lista de paneles de expansión -->
+        @if (childVisible) {
+          @for (recipe of userRecipes?.recipeIdList; track $index) {
+        <mat-accordion class="mb-4">
+          <mat-expansion-panel class="mb-1">
+            <mat-expansion-panel-header>
+              <mat-panel-title> {{recipe.name}} </mat-panel-title>
+            </mat-expansion-panel-header>
+            <app-recipe-info [recipeId]="recipe.recipeId"></app-recipe-info>
+          </mat-expansion-panel>
+        </mat-accordion>
+      }
+        }@else{
+        <mat-spinner></mat-spinner>
+        }
+      </div>
+    </mat-tab>
+
+    <!-- <mat-tab label="Favoritos">
+      
+    </mat-tab> -->
+  </mat-tab-group>
+</div>

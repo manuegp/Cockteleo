@@ -1,0 +1,44 @@
+<div class="modal-header">
+  <h5 class="modal-title" id="exampleModalLabel">{{data.typeDialog}}</h5>
+</div>
+
+<div class="modal-body">
+  <form [formGroup]="recipeForm">
+    <div class="row">
+      <!-- Imagen -->
+      <div class="col-md-6 mb-3">
+        <label for="image" class="form-label">Subir imagen</label>
+        <input type="file" class="form-control" id="image" (change)="onFileSelected($event)"/>
+      </div>
+
+      <!-- Nombre -->
+      <div class="col-md-6 mb-3">
+        <label for="name" class="form-label">Nombre (obligatorio)</label>
+        <input type="text" class="form-control" id="name" placeholder="Nombre de la receta" formControlName="name" />
+      </div>
+    </div>
+
+    <div class="row">
+      <!-- Ingredientes -->
+      <div class="col-md-6 mb-3">
+        <app-ingredient-list [injectIngredient]="data.recipeInfo?.ingredients"  (ingredientsChange)="handleIngredientsChange($event)"></app-ingredient-list>
+      </div>
+
+      <!-- Preparación -->
+      <div class="col-md-6 mb-3">
+        <label for="preparation" class="form-label">Instrucciones de Preparación</label>
+        <textarea class="form-control" id="preparation" rows="5" placeholder="Instrucciones de preparación" formControlName="preparation"></textarea>
+      </div>
+    </div>
+  </form>
+</div>
+
+<div class="modal-footer">
+  <button type="button" (click)="closeDialog()" class="btn btn-secondary">Cerrar</button>
+  @if(data.typeDialog == 'Editar receta'){
+    <button type="button" (click)="onSubmit()" class="btn btn-primary">Actualizar</button>
+  }@else{
+    <button type="button" (click)="onSubmit()" class="btn btn-primary">Crear</button>
+  }
+  
+</div>

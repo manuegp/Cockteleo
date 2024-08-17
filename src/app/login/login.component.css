@@ -1,0 +1,27 @@
+html, body {
+    height: 100%;
+    margin: 0;
+}
+
+.container-fluid {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.image-container {
+    padding: 20px 0; /* Añade algo de espacio arriba y abajo de la imagen */
+    text-align: center; /* Centra la imagen horizontalmente */
+}
+
+.image-container img {
+    max-height: 200px; /* Limita la altura de la imagen para mantener el diseño */
+    width: auto; /* Mantiene la proporción de la imagen */
+    max-width: 100%; /* Asegura que la imagen no sea más ancha que su contenedor */
+}
+
+
+.form-area {
+    flex-grow: 2;
+    overflow: auto;
+}

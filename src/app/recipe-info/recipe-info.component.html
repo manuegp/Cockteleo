@@ -1,0 +1,65 @@
+<div class="recipe-container">
+  <div class="row">
+    <!-- Imagen -->
+    <div class="col-md-2">
+      <div class="image-container">
+        @if(recipe?.photoUrl?.length ){
+        <img [src]="recipe?.photoUrl" alt="Imagen" class="img-fluid" />
+        }@else{
+        <img
+          src="https://static.wixstatic.com/media/3ede69_8c86a384d80a48b7a0d4a39149f25c92~mv2.jpg/v1/fill/w_560,h_560,al_c,q_80,usm_0.66_1.00_0.01,enc_auto/3ede69_8c86a384d80a48b7a0d4a39149f25c92~mv2.jpg"
+          alt="Imagen"
+          class="img-fluid"
+        />
+        }
+      </div>
+    </div>
+
+    <!-- Nombre y columnas de contenido -->
+    <div class="col-md-10">
+      <div class="row">
+        <!-- Botones de editar y favorito -->
+        <div class="col-12 sm-text-center text-rigth">
+          <button class="btn btn-warning btn-sm mx-1" (click)="editRecipe()">
+            <mat-icon>edit</mat-icon> Editar
+          </button>
+          <!-- <button class="btn btn-success btn-sm mx-1">
+            <mat-icon>favorite</mat-icon> Favorito
+          </button> -->
+          <button class="btn btn-danger btn-sm mx-1" (click)="deleteRecipe()">
+            <mat-icon>delete</mat-icon> Borrar
+          </button>
+        </div>
+      </div>
+
+      <div class="row mt-3">
+        <!-- Lista de Ingredientes -->
+        <div class="col-md-4">
+          <div class="ingredients-container">
+            <h5><u>Lista de Ingredientes</u></h5>
+            <ul>
+              @for (ingredient of recipe?.ingredients; track $index) {
+              <li>
+                {{ ingredient.name }} {{ ingredient.quantity }}
+                {{ ingredient.measure }}
+              </li>
+              }
+              <!-- Más ingredientes -->
+            </ul>
+          </div>
+        </div>
+
+        <!-- Preparación -->
+        <div class="col-md-8">
+          <div class="preparation-container">
+            <h5><u>Preparación</u></h5>
+            <p>
+              {{ recipe?.preparation }}
+            </p>
+            <!-- Más pasos -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

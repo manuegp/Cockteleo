@@ -1,0 +1,39 @@
+
+
+.navbar {
+  background-color: #fd7e14;
+  margin: 0; /* Elimina márgenes */
+  margin-bottom: 10px;
+  border-radius: 0; /* Asegura que no haya esquinas redondeadas */
+  width: 100%; /* Asegura que ocupe todo el ancho */
+}
+
+
+.navbar .btn-logout {
+  background-color: #343a40; /* Fondo del botón */
+  color: white;
+}
+
+.buscador input {
+  width: 100%;
+}
+
+.filtros {
+  margin: 16px 0;
+}
+
+.recetas {
+  margin-top: 16px;
+}
+
+.nueva-receta {
+  margin-bottom: 8px;
+}
+
+.mat-tab-group {
+  margin-top: 16px;
+}
+
+.mat-expansion-panel {
+  margin-bottom: 8px;
+}

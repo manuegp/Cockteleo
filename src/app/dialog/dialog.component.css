@@ -1,0 +1,33 @@
+.modal-header {
+  border-bottom: none;
+  padding: 20px; /* Aumenta el padding en la cabecera */
+}
+
+.modal-title {
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.modal-body {
+  padding: 30px; /* Aumenta el padding en el cuerpo del modal */
+}
+
+.modal-footer {
+  padding: 20px 30px; /* Aumenta el padding en el pie del modal */
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.form-control {
+  border-radius: 0.25rem;
+  box-shadow: none;
+  margin-bottom: 15px; /* Aumenta el espacio entre campos */
+}
+
+textarea.form-control {
+  resize: none;
+}
+app-ingredient-list{
+  max-width: auto;
+}

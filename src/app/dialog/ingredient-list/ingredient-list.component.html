@@ -1,0 +1,70 @@
+<div style="display: flex; flex-direction: row; justify-content: space-between">
+  <div style="flex: 1; margin-right: 16px">
+    <mat-form-field appearance="fill">
+      <mat-label>Selecciona un ingrediente</mat-label>
+      <input
+        type="text"
+        matInput
+        [formControl]="myControl"
+        [matAutocomplete]="auto"
+      />
+      <mat-autocomplete
+        #auto="matAutocomplete"
+        (optionSelected)="addOption($event.option.value)"
+      >
+        <mat-option
+          *ngFor="let option of filteredOptions | async"
+          [value]="option"
+        >
+          {{ option }}
+        </mat-option>
+      </mat-autocomplete>
+    </mat-form-field>
+    <label>Ingredientes seleccionados</label>
+    <ul>
+      <li *ngFor="let item of selectedOptions; let i = index">
+        <div
+          style="
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 5px;
+            background-color: #444;
+            color: white;
+            border-radius: 4px;
+          "
+        >
+          <span style="flex-grow: 2; margin-right: 10px">{{ item.name }}</span>
+          <input
+            type="number"
+            min="1"
+            [(ngModel)]="item.quantity"
+            (ngModelChange)="updateIngredient(i, item.quantity, item.measure)"
+            
+          />
+
+          <select
+            [(ngModel)]="item.measure"
+            (ngModelChange)="updateIngredient(i, item.quantity, item.measure)"
+          >
+            <option value="oz">Oz</option>
+            <option value="ml">ml</option>
+          </select>
+          <button
+            (click)="removeItem(i)"
+            style="
+              width: 30px;
+              height: 30px;
+              border: none;
+              background-color: #600;
+              color: white;
+              border-radius: 50%;
+            "
+          >
+            ×
+          </button>
+        </div>
+      </li>
+    </ul>
+  </div>
+</div>

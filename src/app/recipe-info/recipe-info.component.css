@@ -1,0 +1,115 @@
+.recipe-container {
+  border: 1px solid #ccc;
+  padding: 20px;
+  margin-bottom: 20px;
+
+}
+
+.image-container img {
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  object-fit: cover;
+  border: 1px solid #ccc;
+}
+
+.recipe-name {
+  font-size: 24px;
+  font-weight: bold;
+  margin: 0;
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.col-md-2, .col-md-4, .col-md-8, .col-md-10 {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+.ingredients-container, .preparation-container {
+  border: 1px solid #ccc;
+  padding: 10px;
+
+  height: 100%;
+}
+
+.ingredients-container h5, .preparation-container h5 {
+  margin-bottom: 10px;
+}
+
+.image-container, .ingredients-container, .preparation-container {
+  min-height: 300px; /* Puedes ajustar esta altura según sea necesario */
+}
+
+.preparation-container {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.preparation-container p {
+  margin-bottom: 10px;
+  flex-grow: 1;
+}
+
+/* Estilos para los botones */
+.text-right {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.text-right .btn {
+  margin-left: 8px;
+  display: flex;
+  align-items: center;
+}
+
+.text-right .btn mat-icon {
+  margin-right: 5px;
+}
+
+.btn {
+  align-items: center; /* Alinea verticalmente el ícono y el texto */
+  justify-content: center; /* Centra el contenido horizontalmente dentro del botón */
+  padding: 5px 10px; /* Ajusta el padding según sea necesario para un mejor visual */
+}
+
+.btn mat-icon {
+  margin-right: 5px; /* Ajusta el margen derecho para un espaciado adecuado entre el ícono y el texto */
+  vertical-align: middle; /* Asegura que el ícono se alinee en el medio verticalmente */
+}
+
+/* Revisa si es necesario ajustar la altura del ícono y el tamaño del texto para una mejor visualización */
+.mat-icon {
+  font-size: 20px; /* Ajusta según el tamaño deseado para los íconos */
+  height: auto; /* Asegura que el ícono tome la altura apropiada */
+}
+
+.btn-sm {
+  padding: 5px 8px; /* Ajusta el padding para botones pequeños si es necesario */
+}
+
+.text-center {
+  display: flex;
+  justify-content: center; /* Centra los botones horizontalmente */
+  flex-wrap: wrap; /* Permite que los botones se envuelvan en múltiples líneas si no hay suficiente espacio */
+}
+
+/* Media Query para dispositivos pequeños */
+@media (max-width: 768px) {
+  .text-center {
+    justify-content: center;
+    align-items: center;
+    flex-direction: column; /* Apila los botones verticalmente en dispositivos móviles */
+  }
+  
+  .btn {
+    width: 100%; /* Hace que los botones se expandan para llenar su contenedor */
+    margin: 5px 0; /* Aumenta el espacio vertical entre botones */
+  }
+}

@@ -1,0 +1,84 @@
+/* Establecer el estilo general de la lista seleccionada */
+ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  max-height: 150px; /* Altura máxima antes de que aparezca el scroll */
+  overflow-y: auto; /* Scroll vertical cuando se supera la altura máxima */
+  background-color: #333; /* Mismo fondo que otros elementos */
+  border-radius: 4px;
+  border: 1px solid #444; /* Borde para la lista */
+}
+
+/* Asegura que el input ocupe el mismo espacio que los demás */
+mat-form-field {
+  width: 100%;
+  margin-bottom: 16px;
+}
+
+/* Ajustar el fondo y color del input de autocompletar */
+mat-form-field {
+  background-color: #333;
+  color: white;
+  border-radius: 4px;
+}
+
+.mat-form-field-appearance-fill .mat-form-field-flex {
+  background-color: #333;
+}
+
+.mat-form-field-appearance-fill .mat-form-field-label {
+  color: white;
+}
+
+.mat-input-element {
+  color: white;
+}
+
+.mat-option-text {
+  color: white;
+}
+
+
+
+
+button:hover {
+  background-color: #5c6bc0;
+}
+
+button:disabled {
+  background-color: grey;
+}
+li {
+  margin-bottom: 5px;
+  background-color: #333; /* Color de fondo del elemento */
+  border-radius: 4px; /* Bordes redondeados */
+}
+
+li div {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px;
+  background-color: #444; /* Fondo más oscuro para el contenido */
+  color: white;
+}
+
+input[type="number"], select {
+  background-color: #555; /* Fondo de los campos */
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 5px;
+  max-width: 60px;;
+}
+
+button {
+  width: 30px;
+  height: 30px;
+  border: none;
+  background-color: #600; /* Color rojo oscuro para el botón eliminar */
+  color: white;
+  border-radius: 50%; /* Botón redondo */
+  cursor: pointer;
+}
