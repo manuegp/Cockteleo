@@ -1,4 +1,4 @@
-import { inject, Injectable } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { AuthService } from '../auth/auth.service';
 import { from, Observable } from 'rxjs';
 import { docData, getDoc } from '@angular/fire/firestore';
@@ -11,52 +11,33 @@ import {
   setDoc,
   DocumentData,
   deleteDoc,
-  arrayRemove,
 } from 'firebase/firestore';
-import {
-  getStorage,
-  ref,
-  uploadBytes,
-  getDownloadURL,
-  uploadBytesResumable,
-} from '@angular/fire/storage';
-import {
-  UserRecipes,
-  RecipeInfo,
-  Recipe,
-  Ingredient,
-} from '../../../types/recipe.types';
-import { IngredientListComponent } from '../../dialog/ingredient-list/ingredient-list.component';
+import { ref, uploadBytes, getDownloadURL } from '@angular/fire/storage';
+import { UserRecipes, RecipeInfo } from '../../../types/recipe.types';
+
 @Injectable({
   providedIn: 'root',
 })
 export class RecipeService {
   constructor(private authService: AuthService) {}
 
-  public getAllRecipeNamesById(): Promise<Observable<UserRecipes>> {
-    return this.authService.getUid().then((uid) => {
-      const userRecipeHeaderCollection = doc(
-        this.authService.firestore,
-        'recipesHeaders',
-        uid
-      );
+  public getAllRecipeNamesById(): Observable<UserRecipes> {
+    const userRecipeHeaderCollection = doc(
+      this.authService.firestore,
+      'recipesHeaders',
+      this.authService.currentUserUid!
+    );
 
-      let recipesCollection = docData(
-        userRecipeHeaderCollection
-      ) as Observable<UserRecipes>;
-
-      return recipesCollection;
-    });
+    return docData(userRecipeHeaderCollection) as Observable<UserRecipes>;
   }
 
   public async addNewRecipeById(uid: string, newRecipe: RecipeInfo) {
-    console.log('Empezando a añadir receta');
     const recipeCollection = collection(this.authService.firestore, `recipes`);
 
     try {
       let uploadImage = '';
       if (newRecipe.photoUrl) {
-        uploadImage = await this.uploadFile(newRecipe.photoUrl, uid);
+        uploadImage = await this.uploadFile(newRecipe.photoUrl);
       }
       const defaultRecipeTemplate: any = {
         photoUrl: uploadImage, // Esta será la URL obtenida del método de subida
@@ -66,28 +47,29 @@ export class RecipeService {
       };
 
       const docRef = await addDoc(recipeCollection, defaultRecipeTemplate);
-      console.log('Documento añadido con ID: ', docRef.id);
 
-      this.addRecipeIdToHeaders(docRef.id, newRecipe.name as string, uid);
+      this.addRecipeIdToHeaders(docRef.id, newRecipe.name as string);
     } catch (error) {
       console.error('Error añadiendo documento o subiendo imagen: ', error);
     }
   }
 
-  private async uploadFile(input: any, uid: string): Promise<string> {
+  private async uploadFile(input: any): Promise<string> {
     if (!input) {
       throw new Error('No file provided');
     }
 
-    const storageRef = ref(this.authService.storage, `${uid}/${input.name}`);
+    const storageRef = ref(
+      this.authService.storage,
+      `${this.authService.currentUserUid!}/${input.name}`
+    );
     try {
       // Subir el archivo
       const uploadTaskSnapshot = await uploadBytes(storageRef, input);
-      console.log('Imagen subida correctamente');
 
       // Obtener la URL de descarga
       const downloadUrl = await getDownloadURL(uploadTaskSnapshot.ref);
-      console.log('URL obtenida:', downloadUrl);
+
       return downloadUrl;
     } catch (error) {
       console.error('Error subiendo el archivo:', error);
@@ -95,49 +77,40 @@ export class RecipeService {
     }
   }
 
-  private async addRecipeIdToHeaders(
-    id: string,
-    name: string,
-    uid: string | undefined
-  ) {
+  private async addRecipeIdToHeaders(id: string, name: string) {
     const recipeHeadersDocRef = doc(
       this.authService.firestore,
       'recipesHeaders',
-      uid as string
+      this.authService.currentUserUid!
     ); // Reemplaza 'someHeaderId' con el ID correcto del documento
 
     try {
       await updateDoc(recipeHeadersDocRef, {
         recipeIdList: arrayUnion({ recipeId: id, name: name }),
       });
-      console.log('ID de receta añadido a recipeHeaders');
     } catch (error) {
       console.error('Error actualizando recipeHeaders: ', error);
-      console.log('Creando coleccion nueva');
-      this.createRecipeIdHeader(uid as string, id, name);
+      this.createRecipeIdHeader(id, name);
     }
   }
 
-  private async createRecipeIdHeader(
-    uid: string,
-    recipeId: string,
-    name: string
-  ) {
+  private async createRecipeIdHeader(recipeId: string, name: string) {
     const recipeHeadersCollectionRef = collection(
       this.authService.firestore,
       'recipesHeaders'
     );
-    const recipeHeaderDocRef = doc(recipeHeadersCollectionRef, uid);
+    const recipeHeaderDocRef = doc(
+      recipeHeadersCollectionRef,
+      this.authService.currentUserUid!
+    );
 
     try {
       await setDoc(recipeHeaderDocRef, {
         recipeIdList: [{ recipeId: recipeId, name: name }],
-        uid: uid,
+        uid: this.authService.currentUserUid!,
       });
-      console.log('ID de receta añadido a recipeHeaders');
     } catch (error) {
       console.error('Error actualizando recipeHeaders: ', error);
-      console.log('Creando colección nueva');
     }
   }
 
@@ -148,7 +121,6 @@ export class RecipeService {
         if (docSnap.exists()) {
           return docSnap.data();
         } else {
-          console.log('No such document!');
           return undefined;
         }
       })
@@ -160,11 +132,11 @@ export class RecipeService {
     return from(docPromise);
   }
 
-  public getIngredientsById(id: string): Observable<any | undefined> {
+  public getIngredientsById(): Observable<any | undefined> {
     const ingredientsDocRef = doc(
       this.authService.firestore,
       'ingredients',
-      id
+      this.authService.currentUserUid!
     );
     const ingredientsPromise = getDoc(ingredientsDocRef)
       .then((docSnap) => {
@@ -172,7 +144,6 @@ export class RecipeService {
           // Asumimos que los ingredientes están en un campo array llamado 'ingredients'
           return docSnap.data();
         } else {
-          console.log('No se encontró el documento de ingredientes');
           return undefined;
         }
       })
@@ -184,9 +155,13 @@ export class RecipeService {
     return from(ingredientsPromise);
   }
 
-  public async addNewIngredients(newIngredients: string[], uid: string) {
+  public async addNewIngredients(newIngredients: string[]) {
     const firestore = this.authService.firestore; // Asume que Firestore está inyectado en AuthService
-    const ingredientRef = doc(firestore, 'ingredients', uid);
+    const ingredientRef = doc(
+      firestore,
+      'ingredients',
+      this.authService.currentUserUid!
+    );
 
     // Primero, intenta obtener el documento
     const docSnap = await getDoc(ingredientRef);
@@ -196,9 +171,7 @@ export class RecipeService {
       updateDoc(ingredientRef, {
         ingredients: arrayUnion(...newIngredients),
       })
-        .then(() => {
-          console.log('Ingredientes actualizados correctamente');
-        })
+        .then(() => {})
         .catch((error) => {
           console.error('Error al actualizar ingredientes: ', error);
         });
@@ -223,8 +196,10 @@ export class RecipeService {
   }
 
   private async cleanRecipeHeadersByUid(id: string): Promise<any> {
-    const uid = await this.authService.getUid();
-    const docRef = doc(this.authService.firestore, `recipesHeaders/${uid}`);
+    const docRef = doc(
+      this.authService.firestore,
+      `recipesHeaders/${this.authService.currentUserUid!}`
+    );
 
     try {
       // Primero, obtenemos el documento
@@ -240,20 +215,16 @@ export class RecipeService {
         await updateDoc(docRef, {
           recipeIdList: updatedRecipes,
         });
-
-        console.log('Receta eliminada correctamente.');
-      } else {
-        console.log('No se encontró el documento.');
       }
     } catch (error) {
       console.error('Error al eliminar la receta: ', error);
     }
   }
 
-  public updateRecipe(editedRecipe: any, uid: string) {
+  public updateRecipe(editedRecipe: any) {
     const recipeCollection = collection(
       this.authService.firestore,
-      `recipes/${uid}`
+      `recipes/${this.authService.currentUserUid!}`
     );
   }
 }

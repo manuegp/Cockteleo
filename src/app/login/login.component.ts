@@ -27,7 +27,9 @@ import { SnackbarComponent } from '../snackbar/snackbar.component';
 })
 export class LoginComponent {
   private _snackBar = inject(MatSnackBar);
+  
   constructor(private authService: AuthService, private fb: FormBuilder) {}
+
 
   registerForm: FormGroup = this.fb.group({
     email: ['', [Validators.required, Validators.email]],
@@ -39,9 +41,7 @@ export class LoginComponent {
     password: ['', [Validators.required, Validators.minLength(6)]],
   });
 
-  // public logInWithGoogle(): void {
-  //   this.authService.logInWithGoogle();
-  // }
+  
   public logOut() {
     this.authService.logOut();
   }
@@ -63,7 +63,7 @@ export class LoginComponent {
       try {
         await this.authService.loginWithEmailPassword(this.loginForm.value.email, this.loginForm.value.password);
       } catch (error) {
-        this.showError(error); // Suponiendo que tienes una función para manejar el error
+        this.showError(error); 
       }
     }
   }

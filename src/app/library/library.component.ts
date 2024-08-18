@@ -35,31 +35,14 @@ import { DialogComponent } from '../dialog/dialog.component';
 export class LibraryComponent {
   readonly dialog = inject(MatDialog);
   public userRecipes: UserRecipes | undefined;
-  private uid: string;
+
   public childVisible: boolean = false;
 
   constructor(
     private authService: AuthService,
     private recipeService: RecipeService
   ) {
-    this.uid = '';
-    this.getUid()
-      .then((result) => {
-        this.uid = result;
-        this.initializeRecipes();
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-      
-  }
-
-  
-  
-
-  async getUid(): Promise<any> {
-    let uid = await this.authService.getUid();
-    return uid;
+    this.initializeRecipes();
   }
 
   private async initializeRecipes() {
@@ -68,7 +51,7 @@ export class LibraryComponent {
         await this.recipeService.getAllRecipeNamesById();
 
       // Suscribirse al observable
-      const subscription = recipesObservable.subscribe({
+      recipesObservable.subscribe({
         next: async (recipes) => {
           this.userRecipes = recipes;
           if (!this.childVisible) {
@@ -80,7 +63,6 @@ export class LibraryComponent {
         },
         complete: () => {
           this.childVisible = true;
-          console.log('Obtención de recetas completada');
         },
       });
     } catch (error) {
@@ -107,23 +89,28 @@ export class LibraryComponent {
         if (newRecipe.ingredients) {
           this.checkAndAddNewIngredients(newRecipe.ingredients);
         }
-        console.log('Se va a crear receta nueva', newRecipe);
-        this.recipeService.addNewRecipeById(this.uid, newRecipe);
+        this.recipeService.addNewRecipeById(
+          this.authService.currentUserUid!,
+          newRecipe
+        );
       }
     });
   }
 
   private checkAndAddNewIngredients(RecipeIngredients: Ingredient[]) {
     // Primero, filtrar para encontrar ingredientes nuevos
-    const newIngredients = RecipeIngredients.filter(ingredient => ingredient.isNew === true);
-    
+    const newIngredients = RecipeIngredients.filter(
+      (ingredient) => ingredient.isNew === true
+    );
+
     // Luego, transformar el array de ingredientes a un array de nombres de ingredientes
-    const newIngredientNames = newIngredients.map(ingredient => ingredient.name);
-    
+    const newIngredientNames = newIngredients.map(
+      (ingredient) => ingredient.name
+    );
+
     // Comprobar si hay nuevos ingredientes y si es así, llamar a la función para añadirlos
     if (newIngredientNames.length > 0) {
-      this.recipeService.addNewIngredients(newIngredientNames as string[], this.uid);
+      this.recipeService.addNewIngredients(newIngredientNames as string[]);
     }
-}
-
+  }
 }

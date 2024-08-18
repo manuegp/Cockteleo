@@ -38,7 +38,6 @@ export class IngredientListComponent implements OnInit {
 
   constructor(
     private recipeService: RecipeService,
-    private authService: AuthService
   ) {
     this.initializeData();
   }
@@ -47,8 +46,7 @@ export class IngredientListComponent implements OnInit {
     this.loading = true;
     this.error = null;
     try {
-      const uid = await this.authService.getUid();
-      this.recipeService.getIngredientsById(uid).subscribe({
+      this.recipeService.getIngredientsById().subscribe({
         next: (ingredients) => {
           this.options = ingredients.ingredients;
           this.loading = false;
