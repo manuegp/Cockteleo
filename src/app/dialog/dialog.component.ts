@@ -41,7 +41,6 @@ export class DialogComponent {
 
   private createForm() {
     if (this.data.recipeInfo) {
-      console.log(this.data.recipeInfo);
       return (this.recipeForm = this.fb.group({
         name: [this.data.recipeInfo.name, Validators.required],
         preparation: [this.data.recipeInfo.preparation],
@@ -67,7 +66,6 @@ export class DialogComponent {
   }
 
   handleIngredientsChange(ingredients: Ingredient[]) {
-    console.log('Ingredientes actualizados:', ingredients);
     this.ingredients = ingredients;
   }
 }
