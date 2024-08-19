@@ -56,7 +56,9 @@ export class DialogComponent {
   onSubmit(): void {
     if (this.recipeForm.valid) {
       let recipeData = this.recipeForm.value;
-      recipeData.ingredients = this.ingredients;
+      if ((this.data.typeDialog == 'Editar receta' && this.ingredients.length !== 0) || (this.data.typeDialog == 'Nueva receta')) {
+        recipeData.ingredients = this.ingredients;
+      }
       recipeData.photoUrl = this.imageSelected;
       this.dialogRef.close(recipeData);
     }

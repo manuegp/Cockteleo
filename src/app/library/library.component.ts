@@ -75,14 +75,13 @@ export class LibraryComponent {
   }
 
   public async openNewRecipeDialog(): Promise<void> {
-    let uid = await this.authService.getUid();
     const dialogRef = this.dialog.open(DialogComponent, {
       width: '800px',
       maxWidth: '90vw', // Asegura que el diálogo no exceda el 90% del ancho de la ventana
       maxHeight: '90vh', // Asegura que el diálogo no exceda el 90% del alto de la ventana
       panelClass: 'custom-dialog-container', // Clase personalizada para estilos adicionales
 
-      data: { uid: uid, typeDialog: 'Nueva receta' },
+      data: { uid: this.authService.currentUserUid, typeDialog: 'Nueva receta' },
     });
     dialogRef.afterClosed().subscribe((newRecipe: RecipeInfo) => {
       if (newRecipe) {

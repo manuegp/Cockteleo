@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { AuthService } from '../auth/auth.service';
 import { from, Observable } from 'rxjs';
-import { docData, getDoc } from '@angular/fire/firestore';
+import { docData, getDoc, getDocs, query } from '@angular/fire/firestore';
 import {
   doc,
   collection,
@@ -14,12 +14,13 @@ import {
 } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from '@angular/fire/storage';
 import { UserRecipes, RecipeInfo } from '../../../types/recipe.types';
+import { SnackbarService } from '../snackbar/snackbar.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class RecipeService {
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService, private snackBarService: SnackbarService) {}
 
   public getAllRecipeNamesById(): Observable<UserRecipes> {
     const userRecipeHeaderCollection = doc(
@@ -32,6 +33,7 @@ export class RecipeService {
   }
 
   public async addNewRecipeById(uid: string, newRecipe: RecipeInfo) {
+    this.snackBarService.openRecipeSnackbar('Añadiendo receta...');
     const recipeCollection = collection(this.authService.firestore, `recipes`);
 
     try {
@@ -87,7 +89,9 @@ export class RecipeService {
     try {
       await updateDoc(recipeHeadersDocRef, {
         recipeIdList: arrayUnion({ recipeId: id, name: name }),
-      });
+      }).then(()=>{
+        this.snackBarService.openRecipeSnackbar('Receta añadida');
+      })
     } catch (error) {
       console.error('Error actualizando recipeHeaders: ', error);
       this.createRecipeIdHeader(id, name);
@@ -108,7 +112,9 @@ export class RecipeService {
       await setDoc(recipeHeaderDocRef, {
         recipeIdList: [{ recipeId: recipeId, name: name }],
         uid: this.authService.currentUserUid!,
-      });
+      }).then(()=>{
+        this.snackBarService.openRecipeSnackbar('Receta añadida')
+      })
     } catch (error) {
       console.error('Error actualizando recipeHeaders: ', error);
     }
@@ -221,10 +227,70 @@ export class RecipeService {
     }
   }
 
-  public updateRecipe(editedRecipe: any) {
-    const recipeCollection = collection(
-      this.authService.firestore,
-      `recipes/${this.authService.currentUserUid!}`
-    );
+  public async updateRecipe(editedRecipe: any, recipeId: string):Promise<void> {
+    const recipeDoc = doc(this.authService.firestore, 'recipes', recipeId);
+
+    try {
+      // Preparar el objeto de actualización solo con los campos que existen
+      const updateData: any = {};
+
+      if (editedRecipe.name) {
+        updateData.name = editedRecipe.name;
+      }
+      if (editedRecipe.preparation) {
+        updateData.preparation = editedRecipe.preparation;
+      }
+      if (editedRecipe.ingredients) {
+        updateData.ingredients = editedRecipe.ingredients;
+      }
+      if (editedRecipe.photoUrl) {
+        // Suponiendo que `uploadFile` retorna la URL de la imagen subida
+        const uploadedImageUrl = await this.uploadFile(editedRecipe.photoUrl);
+        updateData.photoUrl = uploadedImageUrl;
+      }
+
+      // Solo llamar a updateDoc si hay algo que actualizar
+      if (Object.keys(updateData).length > 0) {
+        await updateDoc(recipeDoc, updateData).then((_result) => {
+          this.updateRecipeName(recipeId, editedRecipe.name);
+        });
+      } else {
+        console.log('No hay cambios que actualizar.');
+      }
+    } catch (error) {
+      console.error('Error actualizando documento o subiendo imagen: ', error);
+    }
+  }
+
+  private async updateRecipeName(recipeId: string, newName: string) {
+    const recipesHeadersRef = collection(this.authService.firestore, 'recipesHeaders');
+    const q = query(recipesHeadersRef);
+    const querySnapshot = await getDocs(q);
+
+    // Buscar todos los documentos
+    querySnapshot.forEach(async (docSnapshot) => {
+      if (docSnapshot.exists()) {
+        // Buscar en la lista de recetas por el recipeId correspondiente
+        const recipeList = docSnapshot.data()['recipeIdList'];
+        let found = false;
+
+        for (let i = 0; i < recipeList.length; i++) {
+          if (recipeList[i].recipeId === recipeId) {
+            // Si encontramos el recipeId, actualizamos el nombre
+            recipeList[i].name = newName;
+            found = true;
+            break;
+          }
+        }
+
+        // Si encontramos y actualizamos el nombre, actualizamos el documento
+        if (found) {
+          await updateDoc(doc(this.authService.firestore, 'recipesHeaders', docSnapshot.id), {
+            recipeIdList: recipeList,
+          });
+          console.log(`Updated recipe name for ${recipeId} to ${newName}`);
+        }
+      }
+    });
   }
 }

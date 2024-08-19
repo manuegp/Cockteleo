@@ -10,8 +10,7 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { SnackbarComponent } from '../snackbar/snackbar.component';
+import { SnackbarService } from '../services/snackbar/snackbar.service';
 @Component({
   selector: 'app-login',
   standalone: true,
@@ -26,9 +25,8 @@ import { SnackbarComponent } from '../snackbar/snackbar.component';
   styleUrl: './login.component.css',
 })
 export class LoginComponent {
-  private _snackBar = inject(MatSnackBar);
   
-  constructor(private authService: AuthService, private fb: FormBuilder) {}
+  constructor(private authService: AuthService, private fb: FormBuilder, private snackbarService: SnackbarService) {}
 
 
   registerForm: FormGroup = this.fb.group({
@@ -51,8 +49,8 @@ export class LoginComponent {
       try {
         console.log('Registro datos:', this.registerForm.value);
         await this.authService.registerWithEmailPassword(this.registerForm.value)  
-      } catch (error) {
-        this.showError(error)
+      } catch (error:any) {
+        this.snackbarService.openErrorLoginSnackbar(error.message as string)
       }
       
     }
@@ -62,19 +60,13 @@ export class LoginComponent {
     if (this.loginForm.valid) {
       try {
         await this.authService.loginWithEmailPassword(this.loginForm.value.email, this.loginForm.value.password);
-      } catch (error) {
-        this.showError(error); 
+      } catch (error:any) {
+        this.snackbarService.openErrorLoginSnackbar(error.message as string)
       }
     }
   }
 
-  showError(error:any) {
-    this._snackBar.openFromComponent(SnackbarComponent, {
-      duration: 5 * 1000,
-      data: {error: error},
-      panelClass:'custom-snackbar-error'
-    });
-  }
+  
     
   }
 

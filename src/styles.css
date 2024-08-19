@@ -23,8 +23,37 @@ body {
   padding: 10px 0 0 0; /* Ajusta el padding para que los botones no estén pegados al borde */
 }
 
-.custom-snackbar-error {
-  background-color: red;
-  padding: 5px;
+.custom-snackbar-error.mat-mdc-snack-bar-container {
+  border: white 2px;
+  .mdc-snackbar__surface {
+    background: red;
+
+    .mat-mdc-button {
+      color: white !important;
+    }
+  }
+
+  .mat-mdc-snack-bar-label.mdc-snackbar__label {
+    color: white;
+    font-weight: 500;
+    white-space: pre-wrap
+  }
 }
+
+.custom-snackbar-success.mat-mdc-snack-bar-container {
+  .mdc-snackbar__surface {
+    background: green;
+
+    .mat-mdc-button {
+      color: white !important;
+    }
+  }
+
+  .mat-mdc-snack-bar-label.mdc-snackbar__label {
+    color: white;
+    font-weight: 500;
+    white-space: pre-wrap
+  }
+}
+
 

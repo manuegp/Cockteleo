@@ -2,6 +2,8 @@ export const handleErrorNotification = (errorCode: any) => {
   switch (errorCode) {
     case 'auth/invalid-email':
       return new Error('Email no válido.');
+    case 'auth/invalid-credential':
+      return new Error('Credenciales invalidas');
     case 'auth/user-disabled':
       return new Error('La cuenta de usuario ha sido deshabilitada.');
     case 'auth/user-not-found':

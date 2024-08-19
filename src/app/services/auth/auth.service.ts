@@ -74,16 +74,6 @@ export class AuthService {
       });
   }
 
-  public async getUid(): Promise<string> {
-    const uid = firstValueFrom(this.user$)
-      .then((result: any) => {
-        return result.uid;
-      })
-      .catch((err) => {
-        throw err;
-      });
-    return uid;
-  }
 
   public registerWithEmailPassword(form: any): Promise<UserCredential> {
     return createUserWithEmailAndPassword(this.auth, form.email, form.password)
