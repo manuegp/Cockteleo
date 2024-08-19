@@ -24,9 +24,7 @@ export class SnackbarService {
       horizontalPosition: 'right',
       verticalPosition: 'bottom',
       panelClass: 'custom-snackbar-success',
-      data: {message: message},
-      
-      
+      data: {message: message}
     });
   }
 }

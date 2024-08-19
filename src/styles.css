@@ -26,6 +26,7 @@ body {
 .custom-snackbar-error.mat-mdc-snack-bar-container {
   border: white 2px;
   .mdc-snackbar__surface {
+    text-align: center;
     background: red;
 
     .mat-mdc-button {
@@ -42,6 +43,7 @@ body {
 
 .custom-snackbar-success.mat-mdc-snack-bar-container {
   .mdc-snackbar__surface {
+    text-align: center;
     background: green;
 
     .mat-mdc-button {
