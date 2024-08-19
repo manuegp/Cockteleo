@@ -20,7 +20,10 @@ import { SnackbarService } from '../snackbar/snackbar.service';
   providedIn: 'root',
 })
 export class RecipeService {
-  constructor(private authService: AuthService, private snackBarService: SnackbarService) {}
+  constructor(
+    private authService: AuthService,
+    private snackBarService: SnackbarService
+  ) {}
 
   public getAllRecipeNamesById(): Observable<UserRecipes> {
     const userRecipeHeaderCollection = doc(
@@ -32,7 +35,7 @@ export class RecipeService {
     return docData(userRecipeHeaderCollection) as Observable<UserRecipes>;
   }
 
-  public async addNewRecipeById(uid: string, newRecipe: RecipeInfo) {
+  public async addNewRecipeById(newRecipe: RecipeInfo) {
     this.snackBarService.openRecipeSnackbar('Añadiendo receta...');
     const recipeCollection = collection(this.authService.firestore, `recipes`);
 
@@ -52,6 +55,7 @@ export class RecipeService {
 
       this.addRecipeIdToHeaders(docRef.id, newRecipe.name as string);
     } catch (error) {
+      this.snackBarService.openErrorRecipe('Error al añadir la receta');
       console.error('Error añadiendo documento o subiendo imagen: ', error);
     }
   }
@@ -89,9 +93,9 @@ export class RecipeService {
     try {
       await updateDoc(recipeHeadersDocRef, {
         recipeIdList: arrayUnion({ recipeId: id, name: name }),
-      }).then(()=>{
+      }).then(() => {
         this.snackBarService.openRecipeSnackbar('Receta añadida');
-      })
+      });
     } catch (error) {
       console.error('Error actualizando recipeHeaders: ', error);
       this.createRecipeIdHeader(id, name);
@@ -112,10 +116,11 @@ export class RecipeService {
       await setDoc(recipeHeaderDocRef, {
         recipeIdList: [{ recipeId: recipeId, name: name }],
         uid: this.authService.currentUserUid!,
-      }).then(()=>{
-        this.snackBarService.openRecipeSnackbar('Receta añadida')
-      })
+      }).then(() => {
+        this.snackBarService.openRecipeSnackbar('Receta añadida');
+      });
     } catch (error) {
+      this.snackBarService.openErrorRecipe('Error al añadir la receta');
       console.error('Error actualizando recipeHeaders: ', error);
     }
   }
@@ -220,16 +225,22 @@ export class RecipeService {
         // Actualizamos el documento con el nuevo array
         await updateDoc(docRef, {
           recipeIdList: updatedRecipes,
+        }).then(() => {
+          this.snackBarService.openRecipeSnackbar('Receta borrada');
         });
       }
     } catch (error) {
       console.error('Error al eliminar la receta: ', error);
+      this.snackBarService.openRecipeErrorSnackbar('Error al borrar');
     }
   }
 
-  public async updateRecipe(editedRecipe: any, recipeId: string):Promise<void> {
+  public async updateRecipe(
+    editedRecipe: any,
+    recipeId: string
+  ): Promise<void> {
     const recipeDoc = doc(this.authService.firestore, 'recipes', recipeId);
-
+    this.snackBarService.openRecipeSnackbar('Actualizando receta...');
     try {
       // Preparar el objeto de actualización solo con los campos que existen
       const updateData: any = {};
@@ -258,39 +269,54 @@ export class RecipeService {
         console.log('No hay cambios que actualizar.');
       }
     } catch (error) {
+      this.snackBarService.openRecipeErrorSnackbar(
+        'Error al actualizar receta'
+      );
       console.error('Error actualizando documento o subiendo imagen: ', error);
     }
   }
 
   private async updateRecipeName(recipeId: string, newName: string) {
-    const recipesHeadersRef = collection(this.authService.firestore, 'recipesHeaders');
-    const q = query(recipesHeadersRef);
-    const querySnapshot = await getDocs(q);
+    try {
+      const recipesHeadersRef = collection(
+        this.authService.firestore,
+        'recipesHeaders'
+      );
+      const q = query(recipesHeadersRef);
+      const querySnapshot = await getDocs(q);
 
-    // Buscar todos los documentos
-    querySnapshot.forEach(async (docSnapshot) => {
-      if (docSnapshot.exists()) {
-        // Buscar en la lista de recetas por el recipeId correspondiente
-        const recipeList = docSnapshot.data()['recipeIdList'];
-        let found = false;
+      // Buscar todos los documentos
+      querySnapshot.forEach(async (docSnapshot) => {
+        if (docSnapshot.exists()) {
+          // Buscar en la lista de recetas por el recipeId correspondiente
+          const recipeList = docSnapshot.data()['recipeIdList'];
+          let found = false;
 
-        for (let i = 0; i < recipeList.length; i++) {
-          if (recipeList[i].recipeId === recipeId) {
-            // Si encontramos el recipeId, actualizamos el nombre
-            recipeList[i].name = newName;
-            found = true;
-            break;
+          for (let i = 0; i < recipeList.length; i++) {
+            if (recipeList[i].recipeId === recipeId) {
+              // Si encontramos el recipeId, actualizamos el nombre
+              recipeList[i].name = newName;
+              found = true;
+              break;
+            }
+          }
+
+          // Si encontramos y actualizamos el nombre, actualizamos el documento
+          if (found) {
+            await updateDoc(
+              doc(this.authService.firestore, 'recipesHeaders', docSnapshot.id),
+              {
+                recipeIdList: recipeList,
+              }
+            ).then(() => {
+              this.snackBarService.openRecipeSnackbar('Receta actualiza');
+            });
+            console.log(`Updated recipe name for ${recipeId} to ${newName}`);
           }
         }
-
-        // Si encontramos y actualizamos el nombre, actualizamos el documento
-        if (found) {
-          await updateDoc(doc(this.authService.firestore, 'recipesHeaders', docSnapshot.id), {
-            recipeIdList: recipeList,
-          });
-          console.log(`Updated recipe name for ${recipeId} to ${newName}`);
-        }
-      }
-    });
+      });
+    } catch (error) {
+      this.snackBarService.openErrorRecipe('Error al borrar la receta');
+    }
   }
 }

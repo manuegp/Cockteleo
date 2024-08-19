@@ -18,12 +18,30 @@ export class SnackbarService {
     });
   }
 
+  public openErrorRecipe(message: string){
+    this._snackBar.openFromComponent(SnackbarComponent, {
+      duration: 5 * 1000,
+      data: {message: message},
+      panelClass:'custom-snackbar-error',
+      politeness: 'off'
+    });
+  }
+
   public openRecipeSnackbar(message: string ){
     this._snackBar.openFromComponent(SnackbarComponent, {
       duration: 5 * 1000,
       horizontalPosition: 'right',
       verticalPosition: 'bottom',
       panelClass: 'custom-snackbar-success',
+      data: {message: message}
+    });
+  }
+  public openRecipeErrorSnackbar(message: string ){
+    this._snackBar.openFromComponent(SnackbarComponent, {
+      duration: 5 * 1000,
+      horizontalPosition: 'right',
+      verticalPosition: 'bottom',
+      panelClass: 'custom-snackbar-error',
       data: {message: message}
     });
   }

@@ -89,7 +89,6 @@ export class LibraryComponent {
           this.checkAndAddNewIngredients(newRecipe.ingredients);
         }
         this.recipeService.addNewRecipeById(
-          this.authService.currentUserUid!,
           newRecipe
         );
       }
