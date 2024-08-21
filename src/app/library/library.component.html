@@ -63,7 +63,7 @@
             <mat-expansion-panel-header>
               <mat-panel-title> {{recipe.name}} </mat-panel-title>
             </mat-expansion-panel-header>
-            <app-recipe-info [recipeId]="recipe.recipeId"></app-recipe-info>
+            <app-recipe-info [recipeId]="recipe.recipeId" (recipeDelete)="handleIngredientsChange($event)"></app-recipe-info>
           </mat-expansion-panel>
         </mat-accordion>
       }

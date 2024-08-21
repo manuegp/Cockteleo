@@ -1,13 +1,15 @@
 import {
   Component,
+  EventEmitter,
   inject,
   Input,
   OnChanges,
   OnInit,
+  Output,
   SimpleChanges,
 } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
-import { RecipeInfo } from '../../types/recipe.types';
+import { Ingredient, RecipeInfo } from '../../types/recipe.types';
 import { RecipeService } from '../services/recipes/recipe.service';
 import { DialogComponent } from '../dialog/dialog.component';
 import { MatDialog } from '@angular/material/dialog';
@@ -24,6 +26,7 @@ import { AuthService } from '../services/auth/auth.service';
 export class RecipeInfoComponent implements OnInit {
   readonly dialog = inject(MatDialog);
   @Input() recipeId!: string | undefined;
+  @Output() recipeDelete = new EventEmitter<string>();
   public recipe: RecipeInfo | undefined;
   constructor(private recipeService: RecipeService) {}
 
@@ -47,7 +50,10 @@ export class RecipeInfoComponent implements OnInit {
   }
 
   public deleteRecipe(): void {
-    this.recipeService.deleteRecipeById(this.recipeId as string);
+    this.recipeService.deleteRecipeById(this.recipeId as string).then(()=>{
+      this.recipeDelete.emit(this.recipeId)
+
+    })
   }
 
   public async editRecipe(): Promise<void> {

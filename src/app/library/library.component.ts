@@ -15,6 +15,7 @@ import {
 import { RecipeService } from '../services/recipes/recipe.service';
 import { MatDialog } from '@angular/material/dialog';
 import { DialogComponent } from '../dialog/dialog.component';
+import { checkNewIngredients } from '../utils/utils';
 
 @Component({
   selector: 'app-library',
@@ -96,19 +97,15 @@ export class LibraryComponent {
   }
 
   private checkAndAddNewIngredients(RecipeIngredients: Ingredient[]) {
-    // Primero, filtrar para encontrar ingredientes nuevos
-    const newIngredients = RecipeIngredients.filter(
-      (ingredient) => ingredient.isNew === true
-    );
-
-    // Luego, transformar el array de ingredientes a un array de nombres de ingredientes
-    const newIngredientNames = newIngredients.map(
-      (ingredient) => ingredient.name
-    );
-
-    // Comprobar si hay nuevos ingredientes y si es así, llamar a la función para añadirlos
-    if (newIngredientNames.length > 0) {
-      this.recipeService.addNewIngredients(newIngredientNames as string[]);
+    if (RecipeIngredients.length > 0) {
+      const newIngredients = checkNewIngredients(RecipeIngredients)
+      if(newIngredients){
+        this.recipeService.addNewIngredients(newIngredients)
+      }
     }
+  }
+
+  public handleIngredientsChange($event:string){
+    this.initializeRecipes()
   }
 }

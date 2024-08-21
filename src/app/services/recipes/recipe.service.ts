@@ -13,8 +13,9 @@ import {
   deleteDoc,
 } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from '@angular/fire/storage';
-import { UserRecipes, RecipeInfo } from '../../../types/recipe.types';
+import { UserRecipes, RecipeInfo, Ingredient } from '../../../types/recipe.types';
 import { SnackbarService } from '../snackbar/snackbar.service';
+import { removeIsNewField } from '../../utils/utils';
 
 @Injectable({
   providedIn: 'root',
@@ -38,7 +39,7 @@ export class RecipeService {
   public async addNewRecipeById(newRecipe: RecipeInfo) {
     this.snackBarService.openRecipeSnackbar('Añadiendo receta...');
     const recipeCollection = collection(this.authService.firestore, `recipes`);
-
+    const cleanIngredients = removeIsNewField(newRecipe.ingredients as Ingredient[])
     try {
       let uploadImage = '';
       if (newRecipe.photoUrl) {
@@ -48,7 +49,7 @@ export class RecipeService {
         photoUrl: uploadImage, // Esta será la URL obtenida del método de subida
         name: newRecipe.name,
         preparation: newRecipe.preparation,
-        ingredients: newRecipe.ingredients,
+        ingredients: cleanIngredients
       };
 
       const docRef = await addDoc(recipeCollection, defaultRecipeTemplate);
@@ -167,9 +168,8 @@ export class RecipeService {
   }
 
   public async addNewIngredients(newIngredients: string[]) {
-    const firestore = this.authService.firestore; // Asume que Firestore está inyectado en AuthService
     const ingredientRef = doc(
-      firestore,
+      this.authService.firestore,
       'ingredients',
       this.authService.currentUserUid!
     );
@@ -201,7 +201,7 @@ export class RecipeService {
   }
 
   public async deleteRecipeById(id: string) {
-    await deleteDoc(doc(this.authService.firestore, 'recipes', id)).then(() => {
+    return deleteDoc(doc(this.authService.firestore, 'recipes', id)).then(() => {
       this.cleanRecipeHeadersByUid(id);
     });
   }
@@ -264,6 +264,7 @@ export class RecipeService {
       if (Object.keys(updateData).length > 0) {
         await updateDoc(recipeDoc, updateData).then((_result) => {
           this.updateRecipeName(recipeId, editedRecipe.name);
+          
         });
       } else {
         console.log('No hay cambios que actualizar.');
