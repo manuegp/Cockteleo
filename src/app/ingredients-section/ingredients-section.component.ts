@@ -36,15 +36,15 @@ export class IngredientsSectionComponent {
   }
 
   private loadIngredients() {
-    try {
-      this.recipeService.getIngredientsById().subscribe({
-        next: (ingredients) => {
-          this.ingredients = ingredients.ingredients;
-        },
-      });
-    } catch (err) {
-      console.log('Error');
-    }
+    this.recipeService.getIngredientsById().subscribe({
+      next: (data) => {
+        console.log('Ingredients data:', data);
+        this.ingredients = data.ingredients
+      },
+      error: (error) => {
+        console.error('Error fetching ingredients:', error);
+      }
+    });
   }
 
   public addIngredient() {
@@ -55,7 +55,7 @@ export class IngredientsSectionComponent {
       this.recipeService.addNewIngredients([this.newIngredient]).then(() => {
         this.snackbarService.openRecipeSnackbar('Ingrediente añadido');
         this.newIngredient = '';
-        this.loadIngredients();
+        
       })
     }
     } catch (error) {
@@ -71,7 +71,7 @@ export class IngredientsSectionComponent {
     this.snackbarService.openRecipeSnackbar('Borrando ingredientes');
     this.recipeService.deleteIngredients(ingredientsValue).then(() => {
       this.snackbarService.openRecipeSnackbar('Ingredientes borrados');
-      this.loadIngredients();
+      
     });
   }
 }

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { AuthService } from '../auth/auth.service';
-import { from, Observable } from 'rxjs';
-import { docData, getDoc, getDocs, query } from '@angular/fire/firestore';
+import { catchError, from, map, Observable, Subscriber } from 'rxjs';
+import { docData, getDoc, getDocs, onSnapshot, query } from '@angular/fire/firestore';
 import {
   doc,
   collection,
@@ -150,27 +150,29 @@ export class RecipeService {
     return from(docPromise);
   }
 
-  public getIngredientsById(): Observable<any | undefined> {
-    const ingredientsDocRef = doc(
-      this.authService.firestore,
-      'ingredients',
-      this.authService.currentUserUid!
-    );
-    const ingredientsPromise = getDoc(ingredientsDocRef)
-      .then((docSnap) => {
-        if (docSnap.exists()) {
-          // Asumimos que los ingredientes están en un campo array llamado 'ingredients'
-          return docSnap.data();
+  public getIngredientsById(): Observable<any> {
+    return new Observable((subscriber: Subscriber<any>) => {
+      const ingredientsDocRef = doc(
+        this.authService.firestore,
+        'ingredients',
+        this.authService.currentUserUid!
+      );
+
+      const unsubscribe = onSnapshot(ingredientsDocRef, (doc) => {
+        if (doc.exists()) {
+          subscriber.next(doc.data());
         } else {
-          return undefined;
+          subscriber.next(undefined);  // O manejar como creas conveniente
         }
-      })
-      .catch((error) => {
-        console.error('Error al obtener el documento de ingredientes:', error);
-        throw error;
+      }, (error) => {
+        subscriber.error(error);
       });
 
-    return from(ingredientsPromise);
+      // Función de limpieza cuando el Observable se complete o se desuscriba
+      return () => {
+        unsubscribe();
+      };
+    });
   }
 
   public async addNewIngredients(newIngredients: string[]): Promise<any> {
