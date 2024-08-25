@@ -12,7 +12,7 @@ export interface Ingredient {
   name?: string,
   quantity?: number,
   measure?: 'oz' | 'ml',
-  isNew?: boolean
+  isNew?: boolean 
 }
 
 export interface RecipeInfo {

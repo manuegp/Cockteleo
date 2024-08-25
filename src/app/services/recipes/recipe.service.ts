@@ -13,7 +13,11 @@ import {
   deleteDoc,
 } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from '@angular/fire/storage';
-import { UserRecipes, RecipeInfo, Ingredient } from '../../../types/recipe.types';
+import {
+  UserRecipes,
+  RecipeInfo,
+  Ingredient,
+} from '../../../types/recipe.types';
 import { SnackbarService } from '../snackbar/snackbar.service';
 import { removeIsNewField } from '../../utils/utils';
 
@@ -39,7 +43,9 @@ export class RecipeService {
   public async addNewRecipeById(newRecipe: RecipeInfo) {
     this.snackBarService.openRecipeSnackbar('Añadiendo receta...');
     const recipeCollection = collection(this.authService.firestore, `recipes`);
-    const cleanIngredients = removeIsNewField(newRecipe.ingredients as Ingredient[])
+    const cleanIngredients = removeIsNewField(
+      newRecipe.ingredients as Ingredient[]
+    );
     try {
       let uploadImage = '';
       if (newRecipe.photoUrl) {
@@ -49,7 +55,7 @@ export class RecipeService {
         photoUrl: uploadImage, // Esta será la URL obtenida del método de subida
         name: newRecipe.name,
         preparation: newRecipe.preparation,
-        ingredients: cleanIngredients
+        ingredients: cleanIngredients,
       };
 
       const docRef = await addDoc(recipeCollection, defaultRecipeTemplate);
@@ -167,7 +173,7 @@ export class RecipeService {
     return from(ingredientsPromise);
   }
 
-  public async addNewIngredients(newIngredients: string[]) {
+  public async addNewIngredients(newIngredients: string[]): Promise<any> {
     const ingredientRef = doc(
       this.authService.firestore,
       'ingredients',
@@ -201,9 +207,11 @@ export class RecipeService {
   }
 
   public async deleteRecipeById(id: string) {
-    return deleteDoc(doc(this.authService.firestore, 'recipes', id)).then(() => {
-      this.cleanRecipeHeadersByUid(id);
-    });
+    return deleteDoc(doc(this.authService.firestore, 'recipes', id)).then(
+      () => {
+        this.cleanRecipeHeadersByUid(id);
+      }
+    );
   }
 
   private async cleanRecipeHeadersByUid(id: string): Promise<any> {
@@ -264,7 +272,6 @@ export class RecipeService {
       if (Object.keys(updateData).length > 0) {
         await updateDoc(recipeDoc, updateData).then((_result) => {
           this.updateRecipeName(recipeId, editedRecipe.name);
-          
         });
       } else {
         console.log('No hay cambios que actualizar.');
@@ -318,6 +325,33 @@ export class RecipeService {
       });
     } catch (error) {
       this.snackBarService.openErrorRecipe('Error al borrar la receta');
+    }
+  }
+
+  public async deleteIngredients(deleteIngredients: string[]): Promise<void> {
+    const ingredientRef = doc(
+      this.authService.firestore,
+      'ingredients',
+      this.authService.currentUserUid!
+    );
+
+    try {
+      const ingredientsSnap = await getDoc(ingredientRef);
+
+      if (ingredientsSnap.exists()) {
+        const ingredients = ingredientsSnap.data()['ingredients']; // Asegúrate de que la clave es correcta
+        const updatedIngredients = ingredients.filter(
+          (ingredient: any) => !deleteIngredients.includes(ingredient)
+        );
+
+        await updateDoc(ingredientRef, {
+          ingredients: updatedIngredients,
+        });
+      } else {
+        console.log('No existing document found!');
+      }
+    } catch (error) {
+      console.error('Error al actualizar ingredientes: ', error);
     }
   }
 }

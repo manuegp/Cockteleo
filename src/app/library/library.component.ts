@@ -1,5 +1,5 @@
-import { Component, inject } from '@angular/core';
-import { MatTabsModule } from '@angular/material/tabs';
+import { Component, inject, ViewChild } from '@angular/core';
+import { MatTabGroup, MatTabsModule } from '@angular/material/tabs';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatExpansionModule } from '@angular/material/expansion';
@@ -16,6 +16,7 @@ import { RecipeService } from '../services/recipes/recipe.service';
 import { MatDialog } from '@angular/material/dialog';
 import { DialogComponent } from '../dialog/dialog.component';
 import { checkNewIngredients } from '../utils/utils';
+import { IngredientsSectionComponent } from "../ingredients-section/ingredients-section.component";
 
 @Component({
   selector: 'app-library',
@@ -31,12 +32,13 @@ import { checkNewIngredients } from '../utils/utils';
     MatExpansionModule,
     MatProgressSpinner,
     DialogComponent,
-  ],
+    IngredientsSectionComponent
+],
 })
 export class LibraryComponent {
   readonly dialog = inject(MatDialog);
   public userRecipes: UserRecipes | undefined;
-
+  @ViewChild('tabGroup') tabGroup: MatTabGroup | undefined;
   public childVisible: boolean = false;
 
   constructor(
@@ -107,5 +109,21 @@ export class LibraryComponent {
 
   public handleIngredientsChange($event:string){
     this.initializeRecipes()
+  }
+
+  swipeLeft(): void {
+    console.log('moviendo izquierda')
+    const newIndex = this.tabGroup!.selectedIndex! + 1;
+    if (newIndex < this.tabGroup!._tabs.length) {
+      this.tabGroup!.selectedIndex = newIndex;
+    }
+  }
+
+  swipeRight(): void {
+    console.log('moviendo derecha')
+    const newIndex = this.tabGroup!.selectedIndex! - 1;
+    if (newIndex >= 0) {
+      this.tabGroup!.selectedIndex = newIndex;
+    }
   }
 }

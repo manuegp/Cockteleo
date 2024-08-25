@@ -46,8 +46,8 @@
   </div> -->
 
   <!-- Pestañas -->
-  <mat-tab-group class="mb-3">
-    <mat-tab label="Todas las recetas">
+  <mat-tab-group class="mb-3" #tabGroup (swipeleft)="swipeLeft()" (swiperight)="swipeRight()" >
+    <mat-tab label="Mis recetas 🍸" >
       <!-- Contenido de la primera pestaña -->
       <div class="recetas position-relative">
         <!-- Botón nueva receta -->
@@ -76,5 +76,9 @@
     <!-- <mat-tab label="Favoritos">
       
     </mat-tab> -->
+ 
+    <mat-tab label="Ingredientes 🥃">
+      <app-ingredients-section></app-ingredients-section>
+    </mat-tab> 
   </mat-tab-group>
 </div>

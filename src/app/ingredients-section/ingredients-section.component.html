@@ -1,0 +1,29 @@
+<div class="container">
+    <div class="sticky-button-container">
+      <div class="row">
+        <form class="example-form col-12" (submit)="addIngredient()">
+          <mat-form-field class="example-form-field w-100">
+            <mat-label>Añadir ingrediente</mat-label>
+            <input matInput [(ngModel)]="newIngredient" name="ingredient" placeholder="Nombre del ingrediente">
+            <button matSuffix mat-icon-button type="submit">
+              <mat-icon>add</mat-icon>
+            </button>
+          </mat-form-field>
+        </form>
+      </div>
+    </div>
+
+<!-- Contenedor para los acordeones con scroll -->
+<div class="acordeon-container">
+  <mat-selection-list #ingredientsSelected>
+    @for (ingredient of ingredients; track ingredient) {
+      <mat-list-option [value]="ingredient">{{ingredient}}</mat-list-option>
+    }
+  </mat-selection-list>
+  
+  </div>
+
+  <button mat-fab color="warn" class="fab-trash" aria-label="Eliminar elemento" (click)="deleteIngredients(ingredientsSelected.selectedOptions.selected)">
+    <mat-icon>delete</mat-icon>
+</button>
+</div>

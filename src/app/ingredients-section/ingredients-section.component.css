@@ -1,0 +1,57 @@
+/* Asegúrate de incluir esto en tu archivo de estilos globales o en el componente respectivo */
+.example-form-field {
+    width: 100%;  /* Extiende el campo de formulario a lo largo de todo el contenedor */
+  }
+/* Estilo para hacer sticky el botón de añadir receta */
+/* Estilo para hacer sticky el botón de añadir receta */
+.sticky-button-container {
+    position: sticky;
+    top: 0; /* Puedes ajustar esto si hay una barra de navegación o algún otro elemento en la parte superior */
+    z-index: 1000;
+  }
+  
+  /* Estilo para la sección de acordeones que permite scroll */
+  .acordeon-container {
+    max-height: calc(100vh - 150px); /* Ajusta la altura del botón/formulario si es necesario */
+    overflow-y: auto;
+  }
+  .example-form-field {
+    width: 100%; /* Asegúrate de que el campo se extienda completamente */
+    font-size: 16px; /* Tamaño de fuente adecuado para facilidad de lectura en móviles */
+  }
+  
+  input[matInput] {
+    height: 48px; /* Altura suficiente para facilitar la interacción táctil */
+  }
+  
+  button[mat-icon-button] {
+    width: 48px; /* Suficientemente grande para ser fácilmente tocable */
+    height: 48px;
+  }
+
+  @media (max-width: 600px) {
+    .sticky-button-container {
+      padding-bottom: 15px; /* Más espacio en móviles */
+    }
+  
+    .acordeon-container {
+      max-height: calc(100vh - 120px); /* Ajuste porque el formulario podría ser más grande */
+    }
+  }
+
+  /* Estilos para el botón flotante de eliminar */
+.fab-trash {
+  color: red;
+  position: fixed; /* Posicionamiento fijo respecto al viewport */
+  bottom: 20px; /* Espacio desde el fondo */
+  right: 20px; /* Espacio desde la derecha */
+  z-index: 1010; /* Asegura que se muestre sobre otros elementos */
+}
+@media (max-width: 600px) {
+  .acordeon-container {
+    max-height: calc(100vh - 100px);  /* Menos espacio para encabezados o elementos de UI en dispositivos móviles */
+  }
+}
+
+/* Estilos para hacer sticky la barra de pestañas */
+

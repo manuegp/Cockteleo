@@ -48,7 +48,7 @@ export class IngredientListComponent implements OnInit {
     try {
       this.recipeService.getIngredientsById().subscribe({
         next: (ingredients) => {
-          this.options = ingredients.ingredients;
+          this.options = ingredients!.ingredients!;
           this.loading = false;
         },
         error: (err) => {
